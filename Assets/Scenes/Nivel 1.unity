@@ -2398,6 +2398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrounded: 0
+  anim: {fileID: 0}
 --- !u!1 &405384848
 GameObject:
   m_ObjectHideFlags: 0
@@ -9061,6 +9062,7 @@ GameObject:
   - component: {fileID: 1371366015}
   - component: {fileID: 1371366016}
   - component: {fileID: 1371366017}
+  - component: {fileID: 1371366018}
   m_Layer: 0
   m_Name: Mario_0
   m_TagString: Untagged
@@ -9222,10 +9224,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rBody: {fileID: 0}
   sensor: {fileID: 404900753}
+  render: {fileID: 0}
+  anim: {fileID: 0}
   newPosition: {x: -80, y: 2, z: 0}
   movementSpeed: 5
   jumpForce: 10
   jump: 0
+--- !u!95 &1371366018
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1371366012}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0f67cedb63967b641954987aed30573b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1412842390
 GameObject:
   m_ObjectHideFlags: 0
