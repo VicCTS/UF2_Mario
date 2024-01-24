@@ -9,6 +9,7 @@ public class ScriptDePrueba : MonoBehaviour
     public int vidasPersonaje2 = 3;
     public float numeroDecimal = 4.5f;
     public string nombrePersonaje = "Nombre de nuestro personaje";
+    public char letra = 'a';
     private bool interruptor = false;
 
     // Start is called before the first frame update
