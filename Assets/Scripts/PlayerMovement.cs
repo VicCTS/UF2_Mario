@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -19,6 +20,16 @@ public class PlayerMovement : MonoBehaviour
     public bool jump = false;
 
     public AudioClip jumpSound;
+
+    public Transform bulletSpawn;
+    public GameObject bulletPrefab;
+
+    private bool canShoot = true;
+    public float timer;
+    public float rateOfFire = 1;
+
+    public Transform hitBox;
+    public float hitBoxRadius = 2;
     
 
     void Awake()
@@ -57,26 +68,18 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("afsdg");
         }*/
 
-        if(Input.GetButtonDown("Jump") && sensor.isGrounded == true)
-        {
-            rBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            anim.SetBool("IsJumping", true);
-            source.PlayOneShot(jumpSound);
-        }
         
-        if(inputHorizontal < 0)
+        
+        Movement();
+
+        Jump();
+
+        Shoot();
+
+        if(Input.GetKeyDown(KeyCode.J))
         {
-            render.flipX = true;
-            anim.SetBool("IsRunning", true);
-        }
-        else if(inputHorizontal > 0)
-        {
-            render.flipX = false;
-            anim.SetBool("IsRunning", true);
-        }
-        else
-        {
-            anim.SetBool("IsRunning", false);
+            //Attack();
+            anim.SetTrigger("isAttacking");
         }
 
     }
@@ -84,5 +87,78 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         rBody.velocity = new Vector2(inputHorizontal * movementSpeed, rBody.velocity.y);
+    }
+
+    void Jump()
+    {
+        if(Input.GetButtonDown("Jump") && sensor.isGrounded == true)
+        {
+            rBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            anim.SetBool("IsJumping", true);
+            source.PlayOneShot(jumpSound);
+        }
+    }
+    
+    void Movement()
+    {
+        if(inputHorizontal < 0)
+        {
+            //render.flipX = true;
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+            anim.SetBool("IsRunning", true);
+        }
+        else if(inputHorizontal > 0)
+        {
+            //render.flipX = false;
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+            anim.SetBool("IsRunning", true);
+        }
+        else
+        {
+            anim.SetBool("IsRunning", false);
+        }
+    }
+
+    void Shoot()
+    {
+        if(!canShoot)
+        {
+            timer += Time.deltaTime;
+
+            if(timer >= rateOfFire)
+            {
+                canShoot = true;
+                timer = 0;
+            }
+        }
+
+        if(Input.GetKeyDown(KeyCode.F) && canShoot)
+        {
+            Instantiate(bulletPrefab, bulletSpawn.position, bulletSpawn.rotation);
+
+            canShoot = false;
+        }
+    }
+
+    public void Attack()
+    {
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(hitBox.position, hitBoxRadius);
+
+        foreach (Collider2D enemy in enemies)
+        {
+            if(enemy.gameObject.tag == "Goombas")
+            {
+                //Destroy(enemy.gameObject);
+                Enemy enemyScript = enemy.GetComponent<Enemy>();
+
+                enemyScript.GoombaDeath();
+            }
+        }
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(hitBox.position, hitBoxRadius);
     }
 }
