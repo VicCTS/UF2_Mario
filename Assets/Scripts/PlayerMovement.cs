@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public SpriteRenderer render;
     public Animator anim;
     AudioSource source;
+    public AudioClip deathSound;
 
     public Vector3 newPosition = new Vector3(50, 5, 0);
 
@@ -30,6 +32,13 @@ public class PlayerMovement : MonoBehaviour
 
     public Transform hitBox;
     public float hitBoxRadius = 2;
+
+    public bool isDeath = false;
+
+    public Animator animator;
+
+    public GameObject balaPrefab;
+    public Transform balaSpawn;
     
 
     void Awake()
@@ -38,6 +47,8 @@ public class PlayerMovement : MonoBehaviour
         render = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         source = GetComponent<AudioSource>();
+
+        animator = GetComponent<Animator>();
     }
 
     // Start is called before the first frame update
@@ -74,12 +85,18 @@ public class PlayerMovement : MonoBehaviour
 
         Jump();
 
-        Shoot();
+        //Shoot();
+
+        if(Input.GetButtonDown("Fire1"))
+        {
+            Instantiate(balaPrefab, balaSpawn.position, balaSpawn.rotation);
+        }
 
         if(Input.GetKeyDown(KeyCode.J))
         {
             //Attack();
             anim.SetTrigger("isAttacking");
+            Instantiate(balaPrefab, balaSpawn.position, balaSpawn.rotation);
         }
 
     }
@@ -94,14 +111,17 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetButtonDown("Jump") && sensor.isGrounded == true)
         {
             rBody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            anim.SetBool("IsJumping", true);
+            //anim.SetBool("IsJumping", true);
             source.PlayOneShot(jumpSound);
+
+
+            animator.SetBool("IsJumping", true);
         }
     }
     
     void Movement()
     {
-        if(inputHorizontal < 0)
+        /*if(inputHorizontal < 0)
         {
             //render.flipX = true;
             transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -116,6 +136,21 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             anim.SetBool("IsRunning", false);
+        }*/
+
+        if(inputHorizontal < 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+            animator.SetBool("IsRunning", true);
+        }
+        else if(inputHorizontal > 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+            animator.SetBool("IsRunning", true);
+        }
+        else
+        {
+            animator.SetBool("IsRunning", false);
         }
     }
 
@@ -154,6 +189,42 @@ public class PlayerMovement : MonoBehaviour
                 enemyScript.GoombaDeath();
             }
         }
+    }
+
+    public void Death()
+    {
+        source.PlayOneShot(deathSound);
+
+        SceneManager.LoadScene(0);
+
+        //StartCoroutine("Die");
+        //StartCoroutine(Die(7, 8.5f));
+
+        //StopCoroutine("Die");
+        //StopAllCoroutines();
+    }
+
+    public IEnumerator Die()
+    {
+        isDeath = true;
+
+        source.PlayOneShot(deathSound);
+
+        //Time.timeScale = 0;
+
+        yield return new WaitForSeconds(3);
+        //yield return new WaitForSecondsRealtime(2);
+        //yield return null;
+        //yield return new WaitForEndOfFrame();
+
+        //yield return Corrutina();
+
+        SceneManager.LoadScene(0);
+    }
+
+    IEnumerator Corrutina()
+    {
+        yield return new WaitForSeconds(2);
     }
 
     void OnDrawGizmos()

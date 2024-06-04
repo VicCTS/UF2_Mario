@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    private GameManager gameManager;
+
     private Rigidbody2D rBody;
     private AudioSource source;
     private BoxCollider2D boxCollider;
@@ -20,6 +22,8 @@ public class Enemy : MonoBehaviour
         rBody = GetComponent<Rigidbody2D>();
         source = GetComponent<AudioSource>();
         boxCollider = GetComponent<BoxCollider2D>();
+        
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
@@ -44,7 +48,15 @@ public class Enemy : MonoBehaviour
 
         if(collision.gameObject.tag == "Player")
         {
-            Destroy(collision.gameObject);
+            PlayerMovement playerScript = collision.gameObject.GetComponent<PlayerMovement>();
+
+            //playerScript.Death();
+
+            if(playerScript.isDeath == false)
+            {
+                playerScript.StartCoroutine("Die");
+            }
+            
         }
         
     }
@@ -56,5 +68,15 @@ public class Enemy : MonoBehaviour
         rBody.gravityScale = 0;
         enemyDirection = 0;
         Destroy(gameObject, 0.5f);
+    }
+
+    void OnBecameVisible()
+    {
+        gameManager.enemiesInScreen.Add(this.gameObject);
+    }
+
+    void OnBecameInvisible()
+    {
+        gameManager.enemiesInScreen.Remove(this.gameObject);
     }
 }
